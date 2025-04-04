@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{ post['title'] }}</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f4f4; padding: 20px; }
+        .post, .comments { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .comment { border-top: 1px solid #ccc; padding-top: 10px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="post">
+        <h1>{{ post['title'] }}</h1>
+        <p><strong>닉네임:</strong> {{ post['nickname'] }}</p>
+        <div>{{ post['content']|safe }}</div>
+    </div>
+
+    <div class="comments">
+        <h2>댓글</h2>
+        {% for comment in comments %}
+        <div class="comment">
+            <p><strong>{{ comment['nickname'] }}</strong>: {{ comment['content'] }}</p>
+        </div>
+        {% else %}
+        <p>댓글이 없습니다.</p>
+        {% endfor %}
+    </div>
+</body>
+</html>

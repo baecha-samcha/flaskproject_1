@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>글쓰기</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f0f0f0;
+        }
+        .form-box {
+            background: white;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            border-radius: 12px;
+        }
+        input, textarea {
+            width: 100%;
+            margin-bottom: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 20px;
+            background: #4CAF50;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-box">
+        <h2>✏️ 새 글 쓰기</h2>
+        <form method="POST">
+            <input type="text" name="nickname" placeholder="닉네임" required>
+            <input type="text" name="title" placeholder="제목" required>
+            <textarea name="content" rows="8" placeholder="내용을 입력하세요" required></textarea>
+            <button type="submit">글 올리기</button>
+        </form>
+    </div>
+</body>
+</html>

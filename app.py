@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, session, url_for
 import sqlite3
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"  # 아무 문자열이나 써도 됨
@@ -67,6 +68,49 @@ def change_password():
 def logout():
     session.clear()
     return redirect(url_for("home"))
+
+# 게시글 목록 페이지
+@app.route("/board")
+def board():
+    if "email" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db_connection()
+    posts = conn.execute("SELECT * FROM posts ORDER BY created_at DESC").fetchall()
+    conn.close()
+    return render_template("board.html", posts=posts)
+
+# 글쓰기 페이지
+@app.route("/write", methods=["GET", "POST"])
+def write():
+    if "email" not in session:
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+        title = request.form["title"]
+        content = request.form["content"]
+        nickname = request.form["nickname"]
+
+        conn = get_db_connection()
+        conn.execute("INSERT INTO posts (title, content, nickname) VALUES (?, ?, ?)",
+                     (title, content, nickname))
+        conn.commit()
+        conn.close()
+        return redirect(url_for("board"))
+    
+    return render_template("write.html")
+
+@app.route("/post/<int:post_id>")
+def view_post(post_id):
+    conn = get_db_connection()
+    post = conn.execute("SELECT * FROM posts WHERE id = ?", (post_id,)).fetchone()
+    comments = conn.execute("SELECT * FROM comments WHERE post_id = ?", (post_id,)).fetchall()
+    conn.close()
+
+    if post is None:
+        return "해당 게시물이 존재하지 않습니다.", 404
+    
+    return render_template("post.html", post=post, comments=comments)
 
 # 실행
 if __name__ == "__main__":
