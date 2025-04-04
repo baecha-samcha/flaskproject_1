@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>로그인</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 로그인</h1>
+        <form method="post">
+            <input type="email" name="email" placeholder="이메일 입력" required>
+            <input type="password" name="password" placeholder="비밀번호 입력" required>
+            <button type="submit">로그인</button>
+        </form>
+    </div>
+</body>
+</html>

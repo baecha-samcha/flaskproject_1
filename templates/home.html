@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>홈</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        {% if email %}
+            <h1>🎉 환영합니다, {{ email }}님!</h1>
+            <p>로그인에 성공했습니다.</p>
+            <a href="{{ url_for('logout') }}"><button>로그아웃</button></a>
+        {% else %}
+            <h1>👋 안녕하세요!</h1>
+            <p>이 사이트는 로그인 기반으로 작동합니다.</p>
+            <a href="{{ url_for('login') }}"><button>로그인</button></a>
+        {% endif %}
+    </div>
+</body>
+</html>
