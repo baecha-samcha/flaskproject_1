@@ -1,30 +1,43 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ post['title'] }}</title>
-    <style>
-        body { font-family: sans-serif; background-color: #f4f4f4; padding: 20px; }
-        .post, .comments { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
-        .comment { border-top: 1px solid #ccc; padding-top: 10px; margin-top: 10px; }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="post">
+    <div class="container">
         <h1>{{ post['title'] }}</h1>
-        <p><strong>닉네임:</strong> {{ post['nickname'] }}</p>
-        <div>{{ post['content']|safe }}</div>
-    </div>
+        <p><strong>작성자:</strong> {{ post['nickname'] }}</p>
+        <p>{{ post['content'] | safe }}</p>
+        
+        <hr>
 
-    <div class="comments">
-        <h2>댓글</h2>
-        {% for comment in comments %}
-        <div class="comment">
-            <p><strong>{{ comment['nickname'] }}</strong>: {{ comment['content'] }}</p>
+        <!-- 기존 댓글 목록 -->
+        <div class="comments-section">
+            <h3>댓글</h3>
+            {% for comment in comments %}
+                <div class="comment">
+                    <strong>닉네임:</strong> {{ comment['nickname'] }}<br>
+                    {{ comment['content'] }}
+                </div>
+            {% endfor %}
         </div>
-        {% else %}
-        <p>댓글이 없습니다.</p>
-        {% endfor %}
+
+        <hr>
+
+        <!-- 댓글 작성 폼 (댓글 목록과 분리됨) -->
+        <div class="comment-form">
+            <h3>댓글 작성</h3>
+            <form action="{{ url_for('add_comment', post_id=post['id']) }}" method="post">
+                <input type="text" name="nickname" placeholder="닉네임" required>
+                <textarea name="content" placeholder="댓글 작성" required></textarea>
+                <button type="submit">댓글 작성</button>
+            </form>
+        </div>
+
+        <a href="{{ url_for('board') }}">← 게시판으로 돌아가기</a>
     </div>
 </body>
 </html>

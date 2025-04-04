@@ -1,45 +1,98 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <title>글쓰기</title>
     <style>
         body {
-            font-family: sans-serif;
-            background: #f0f0f0;
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 40px;
         }
-        .form-box {
-            background: white;
-            max-width: 600px;
-            margin: 40px auto;
-            padding: 20px;
-            border-radius: 12px;
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background-color: #fff;
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
         }
-        input, textarea {
+        .toolbar {
+            margin-bottom: 10px;
+        }
+        .toolbar button {
+            margin-right: 5px;
+            padding: 5px 10px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .toolbar button.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        #editor {
             width: 100%;
-            margin-bottom: 12px;
+            min-height: 300px;
             padding: 10px;
-            border-radius: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: white;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            border-radius: 5px;
             border: 1px solid #ccc;
         }
-        button {
+        .submit-btn {
             padding: 10px 20px;
-            background: #4CAF50;
-            border: none;
-            border-radius: 8px;
-            color: white;
             font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
     </style>
+    <script>
+        function format(command, value = null, el) {
+            document.execCommand(command, false, value);
+            el.classList.toggle('active');
+        }
+
+        function submitContent() {
+            const editor = document.getElementById('editor');
+            const content = document.getElementById('content');
+            content.value = editor.innerHTML;
+            return true;
+        }
+    </script>
 </head>
 <body>
-    <div class="form-box">
-        <h2>✏️ 새 글 쓰기</h2>
-        <form method="POST">
+    <div class="container">
+        <h2>글쓰기</h2>
+        <form method="post" onsubmit="return submitContent();">
             <input type="text" name="nickname" placeholder="닉네임" required>
-            <input type="text" name="title" placeholder="제목" required>
-            <textarea name="content" rows="8" placeholder="내용을 입력하세요" required></textarea>
-            <button type="submit">글 올리기</button>
+            <input type="text" name="title" placeholder="제목을 입력하세요" required>
+
+            <div class="toolbar">
+                <button type="button" onclick="format('bold', null, this)"><b>B</b></button>
+                <button type="button" onclick="format('italic', null, this)"><i>I</i></button>
+                <button type="button" onclick="format('underline', null, this)"><u>U</u></button>
+                <button type="button" onclick="format('foreColor', 'red', this)">빨간색</button>
+                <button type="button" onclick="format('fontSize', '5', this)">크게</button>
+                <button type="button" onclick="format('justifyCenter', null, this)">가운데 정렬</button>
+            </div>
+
+            <div id="editor" contenteditable="true" style="white-space: pre-wrap;"></div>
+
+            <textarea id="content" name="content" style="display: none;"></textarea>
+
+            <br>
+            <button class="submit-btn" type="submit">작성</button>
         </form>
     </div>
 </body>

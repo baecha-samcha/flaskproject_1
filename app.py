@@ -81,36 +81,60 @@ def board():
     return render_template("board.html", posts=posts)
 
 # 글쓰기 페이지
+# 게시글 작성 페이지
 @app.route("/write", methods=["GET", "POST"])
 def write():
     if "email" not in session:
         return redirect(url_for("login"))
 
     if request.method == "POST":
+        nickname = request.form["nickname"]
         title = request.form["title"]
         content = request.form["content"]
-        nickname = request.form["nickname"]
 
         conn = get_db_connection()
-        conn.execute("INSERT INTO posts (title, content, nickname) VALUES (?, ?, ?)",
-                     (title, content, nickname))
+        conn.execute(
+            "INSERT INTO posts (nickname, title, content) VALUES (?, ?, ?)",
+            (nickname, title, content),
+        )
         conn.commit()
         conn.close()
         return redirect(url_for("board"))
-    
     return render_template("write.html")
 
-@app.route("/post/<int:post_id>")
+# 게시글 상세 보기 및 댓글 처리
+@app.route("/post/<int:post_id>", methods=["GET", "POST"])
 def view_post(post_id):
     conn = get_db_connection()
     post = conn.execute("SELECT * FROM posts WHERE id = ?", (post_id,)).fetchone()
     comments = conn.execute("SELECT * FROM comments WHERE post_id = ?", (post_id,)).fetchall()
-    conn.close()
 
-    if post is None:
-        return "해당 게시물이 존재하지 않습니다.", 404
-    
+    if request.method == "POST":
+        if "email" not in session:
+            return redirect(url_for("login"))
+        nickname = session["email"]  # 로그인한 사용자 이메일을 댓글 닉네임으로 사용
+        comment = request.form["comment"]
+        conn.execute(
+            "INSERT INTO comments (post_id, nickname, comment) VALUES (?, ?, ?)",
+            (post_id, nickname, comment),
+        )
+        conn.commit()
+
+    conn.close()
     return render_template("post.html", post=post, comments=comments)
+
+@app.route("/add_comment/<int:post_id>", methods=["POST"])
+def add_comment(post_id):
+    nickname = request.form['nickname']
+    content = request.form['content']
+    
+    conn = get_db_connection()
+    conn.execute("INSERT INTO comments (post_id, nickname, content) VALUES (?, ?, ?)",
+                 (post_id, nickname, content))
+    conn.commit()
+    conn.close()
+    
+    return redirect(url_for('view_post', post_id=post_id))
 
 # 실행
 if __name__ == "__main__":
