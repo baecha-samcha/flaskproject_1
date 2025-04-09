@@ -2,42 +2,37 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ post['title'] }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>{{ post.title }}</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 40px;
+            background-color: #f9f9f9;
+        }
+        .post-container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .post-content {
+            margin-top: 20px;
+        }
+        img {
+            max-width: 100%;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>{{ post['title'] }}</h1>
-        <p><strong>작성자:</strong> {{ post['nickname'] }}</p>
-        <p>{{ post['content'] | safe }}</p>
-        
-        <hr>
-
-        <!-- 기존 댓글 목록 -->
-        <div class="comments-section">
-            <h3>댓글</h3>
-            {% for comment in comments %}
-                <div class="comment">
-                    <strong>닉네임:</strong> {{ comment['nickname'] }}<br>
-                    {{ comment['content'] }}
-                </div>
-            {% endfor %}
-        </div>
-
-        <hr>
-
-        <!-- 댓글 작성 폼 (댓글 목록과 분리됨) -->
-        <div class="comment-form">
-            <h3>댓글 작성</h3>
-            <form action="{{ url_for('add_comment', post_id=post['id']) }}" method="post">
-                <input type="text" name="nickname" placeholder="닉네임" required>
-                <textarea name="content" placeholder="댓글 작성" required></textarea>
-                <button type="submit">댓글 작성</button>
-            </form>
-        </div>
-
-        <a href="{{ url_for('board') }}">← 게시판으로 돌아가기</a>
+    <div class="post-container">
+        <h2>{{ post.title }}</h2>
+        <p><strong>닉네임:</strong> {{ post.nickname }}</p>
+        <div class="post-content">{{ post.content | safe }}</div>
     </div>
+
 </body>
 </html>

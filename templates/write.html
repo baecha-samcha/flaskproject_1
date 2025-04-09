@@ -1,99 +1,165 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>글쓰기</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            padding: 40px;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background-color: #fff;
-            padding: 30px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-        }
-        .toolbar {
-            margin-bottom: 10px;
-        }
-        .toolbar button {
-            margin-right: 5px;
-            padding: 5px 10px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        .toolbar button.active {
-            background-color: #4CAF50;
-            color: white;
-        }
-        #editor {
-            width: 100%;
-            min-height: 300px;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background: white;
-        }
-        input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            font-size: 16px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-        .submit-btn {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-    </style>
-    <script>
-        function format(command, value = null, el) {
-            document.execCommand(command, false, value);
-            el.classList.toggle('active');
-        }
-
-        function submitContent() {
-            const editor = document.getElementById('editor');
-            const content = document.getElementById('content');
-            content.value = editor.innerHTML;
-            return true;
-        }
-    </script>
+  <meta charset="UTF-8">
+  <title>글쓰기</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      padding: 40px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background-color: #fff;
+      padding: 30px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+    .toolbar {
+      margin-bottom: 10px;
+    }
+    .toolbar button,
+    .toolbar input[type="color"],
+    .toolbar select {
+      margin-right: 8px;
+      padding: 5px 10px;
+      font-size: 14px;
+      cursor: pointer;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #eee;
+    }
+    .toolbar button.active {
+      background-color: #4CAF50;
+      color: white;
+    }
+    #editor {
+      width: 100%;
+      min-height: 300px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #fff;
+    }
+    input[type="text"], input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .submit-btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h2>글쓰기</h2>
-        <form method="post" onsubmit="return submitContent();">
-            <input type="text" name="nickname" placeholder="닉네임" required>
-            <input type="text" name="title" placeholder="제목을 입력하세요" required>
+  <div class="container">
+    <h2>글쓰기</h2>
+    <form method="POST" enctype="multipart/form-data" onsubmit="prepareSubmit()">
+      <input type="text" name="nickname" placeholder="닉네임" required>
+      <input type="text" name="title" placeholder="제목" required>
 
-            <div class="toolbar">
-                <button type="button" onclick="format('bold', null, this)"><b>B</b></button>
-                <button type="button" onclick="format('italic', null, this)"><i>I</i></button>
-                <button type="button" onclick="format('underline', null, this)"><u>U</u></button>
-                <button type="button" onclick="format('foreColor', 'red', this)">빨간색</button>
-                <button type="button" onclick="format('fontSize', '5', this)">크게</button>
-                <button type="button" onclick="format('justifyCenter', null, this)">가운데 정렬</button>
-            </div>
+      <div class="toolbar">
+        <button type="button" onclick="toggleStyle(this, 'bold')"><b>B</b></button>
+        <button type="button" onclick="toggleStyle(this, 'italic')"><i>I</i></button>
+        <button type="button" onclick="toggleStyle(this, 'underline')"><u>U</u></button>
+        <button type="button" class="align-btn" onclick="setAlignment(this, 'justifyLeft')">좌</button>
+        <button type="button" class="align-btn" onclick="setAlignment(this, 'justifyCenter')">중앙</button>
+        <button type="button" class="align-btn" onclick="setAlignment(this, 'justifyRight')">우</button>
+        <select onchange="execCmdValue('fontSize', this.value)">
+          <option value="">크기</option>
+          <option value="3">중간</option>
+          <option value="5">크게</option>
+          <option value="7">아주 크게</option>
+        </select>
+        <input type="color" onchange="execCmdValue('foreColor', this.value)">
+        <input type="file" id="imageUpload" name="image" accept="image/*">
+      </div>
 
-            <div id="editor" contenteditable="true" style="white-space: pre-wrap;"></div>
+      <div id="editor" contenteditable="true"></div>
+      <textarea name="content" id="content" hidden></textarea>
 
-            <textarea id="content" name="content" style="display: none;"></textarea>
+      <br>
+      <button class="submit-btn" type="submit">작성</button>
+    </form>
+  </div>
 
-            <br>
-            <button class="submit-btn" type="submit">작성</button>
-        </form>
-    </div>
+  <script>
+    function toggleStyle(button, command) {
+      document.execCommand(command, false, null);
+      button.classList.toggle("active");
+    }
+
+    function setAlignment(button, direction) {
+  const editor = document.getElementById("editor");
+  editor.focus(); // 커서를 에디터로 강제로 옮겨줘야 동작함
+
+  document.execCommand(direction, false, null);
+
+  // 정렬 버튼 중복 선택 방지
+  const alignButtons = document.querySelectorAll(".align-btn");
+  alignButtons.forEach(btn => btn.classList.remove("active"));
+  button.classList.add("active");
+}
+
+
+    function execCmdValue(command, value) {
+      document.execCommand(command, false, value);
+    }
+
+    document.getElementById("imageUpload").addEventListener("change", function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        img.style.maxWidth = "100%";
+        document.getElementById("editor").appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function prepareSubmit() {
+      const editorContent = document.getElementById("editor").innerHTML;
+      document.getElementById("content").value = editorContent;
+    }
+  </script>
+  <script>
+    // 텍스트 포맷팅 관련 코드 (이미 있을 수도 있음)
+  
+    // ✅ 여기에 추가
+    document.getElementById("imageUpload").addEventListener("change", function(e) {
+      const file = e.target.files[0];
+      if (file && file.size > 5 * 1024 * 1024) {
+          alert("⚠️ 5MB 이상 이미지는 업로드할 수 없습니다!");
+          e.target.value = ""; // 업로드 취소
+      }
+    });
+  
+    // 작성 전 editor 내용을 textarea에 복사
+    function prepareSubmit() {
+      const editorContent = document.getElementById("editor").innerHTML;
+      document.getElementById("content").value = editorContent;
+    }
+  </script>
+  {% if error %}
+  <script>
+      alert("{{ error }}");
+  </script>
+  {% endif %}
+  
 </body>
 </html>
