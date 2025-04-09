@@ -1,47 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-    <meta charset="utf-8">
-    <title>홈</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            background-color: #f2f2f2;
-            text-align: center;
-            padding: 50px;
-        }
-
-        .container {
-            background: white;
-            display: inline-block;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            margin-bottom: 20px;
-        }
-
-        a.button {
-            display: inline-block;
-            padding: 12px 24px;
-            background-color: #4CAF50;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-
-        a.button:hover {
-            background-color: #45a049;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>홈</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f4f4f4;
+      padding: 40px;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 30px;
+    }
+    .btn {
+      display: inline-block;
+      margin: 10px;
+      padding: 15px 25px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none;
+    }
+    .btn:hover {
+      background-color: #45a049;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>환영합니다, {{ session['email'] }}!</h1>
-        <a class="button" href="{{ url_for('board') }}">📋 게시판 가기</a>
-    </div>
+  {% if email %}
+    <h1>환영합니다, {{ email }}님!</h1>
+    <a class="btn" href="/board">📋 게시판</a>
+    <a class="btn" href="/create_1bancon">✨ 일반콘 만들기</a>
+    <a class="btn" href="/1bancon_list">🖼 일반콘 목록</a>
+    <a class="btn" href="/logout">🚪 로그아웃</a>
+  {% else %}
+    <h1>로그인 해주세요</h1>
+    <a class="btn" href="/login">🔐 로그인</a>
+  {% endif %}
 </body>
 </html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ set_info.title }} - 일반콘</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f9f9f9;
+      padding: 40px;
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 10px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, 100px);
+      gap: 15px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+    .grid img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .desc {
+      margin-bottom: 20px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <h2>{{ set_info.title }}</h2>
+  <p class="desc">{{ set_info.description }}</p>
+  <div class="grid">
+    {% for item in items %}
+      <img src="/static/1bancon/{{ item.filename }}" alt="{{ item.name }}" title="{{ item.name }}">
+    {% endfor %}
+  </div>
+  <!-- 아래 코드를 본문 어딘가에 넣기 -->
+<a href="/download_1bancon/{{ set_info.id }}" class="btn-download">
+    📥 무료 다운로드
+  </a>
+  
+  <style>
+  .btn-download {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+  }
+  .btn-download:hover {
+    background-color: #0056b3;
+  }
+  </style>
+  
+</body>
+</html>

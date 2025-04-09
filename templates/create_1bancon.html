@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>일반콘 만들기</title>
+  <style>
+    body { font-family: sans-serif; background: #f9f9f9; padding: 40px; }
+    .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; }
+    .image-list { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+    .image-box { width: 100px; text-align: center; }
+    .image-box img { width: 100px; height: 100px; object-fit: cover; border: 1px solid #ccc; }
+    .image-box input { width: 100px; margin-top: 5px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📦 일반콘 만들기</h2>
+    <form method="POST" enctype="multipart/form-data" id="dcconForm">
+      <label>세트 제목:</label>
+      <input type="text" name="title" required><br><br>
+
+      <label>설명:</label>
+      <input type="text" name="description"><br><br>
+
+      <label>썸네일 이미지 (100x100):</label>
+      <input type="file" name="thumbnail" accept="image/*" required><br><br>
+
+      <label>콘 이미지 업로드 (최대 60개, 각 100x100):</label>
+      <input type="file" name="images" accept="image/*" multiple required><br><br>
+
+      <div class="image-list" id="previewContainer"></div>
+
+      <button type="submit">✅ 일반콘 만들기</button>
+    </form>
+  </div>
+
+  <script>
+    const imageInput = document.querySelector('input[name="images"]');
+    const previewContainer = document.getElementById("previewContainer");
+
+    imageInput.addEventListener("change", function () {
+      previewContainer.innerHTML = "";
+
+      if (this.files.length > 60) {
+        alert("이미지는 최대 60개까지만 가능합니다.");
+        this.value = "";
+        return;
+      }
+
+      Array.from(this.files).forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const box = document.createElement("div");
+          box.className = "image-box";
+          box.innerHTML = `
+            <img src="${e.target.result}">
+            <input type="text" name="names" placeholder="이름${index + 1}" required>
+          `;
+          previewContainer.appendChild(box);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+  </script>
+</body>
+</html>

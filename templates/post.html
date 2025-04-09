@@ -1,38 +1,169 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>{{ post.title }}</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            padding: 40px;
-            background-color: #f9f9f9;
-        }
-        .post-container {
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .post-content {
-            margin-top: 20px;
-        }
-        img {
-            max-width: 100%;
-            margin-top: 20px;
-            border-radius: 5px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>{{ post.title }}</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 40px;
+      background-color: #f9f9f9;
+    }
+    .post-container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .post-content {
+      margin-top: 20px;
+    }
+    img {
+      max-width: 100%;
+      margin-top: 20px;
+      border-radius: 5px;
+    }
+    .comment-box {
+      max-width: 800px;
+      margin: 40px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    .comment {
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: #f1f1f1;
+      border-radius: 5px;
+    }
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
 </head>
 <body>
-    <div class="post-container">
-        <h2>{{ post.title }}</h2>
-        <p><strong>닉네임:</strong> {{ post.nickname }}</p>
-        <div class="post-content">{{ post.content | safe }}</div>
+    <script>
+        function openDcconSelector() {
+          const selector = document.getElementById("dccon-selector");
+          selector.innerHTML = "불러오는 중...";
+          selector.style.display = "block";
+        
+          fetch("/api/user_1bancon")
+            .then(res => res.json())
+            .then(data => {
+              if (data.length === 0) {
+                selector.innerHTML = "📦 다운로드한 일반콘이 없습니다.";
+                return;
+              }
+        
+              // 목록을 썸네일로 보여주기
+              selector.innerHTML = "";
+              data.forEach(set => {
+                const thumb = document.createElement("img");
+                thumb.src = `/static/1bancon/${set.thumbnail}`;
+                thumb.alt = set.title;
+                thumb.style.width = "80px";
+                thumb.style.margin = "5px";
+                thumb.style.cursor = "pointer";
+                thumb.title = set.title;
+                thumb.onclick = () => loadDccons(set.id);
+                selector.appendChild(thumb);
+              });
+            });
+        }
+        
+        function loadDccons(setId) {
+          const selector = document.getElementById("dccon-selector");
+          selector.innerHTML = "콘 불러오는 중...";
+        
+          fetch(`/api/1bancon_items/${setId}`) // 이건 나중에 변경될 수도 있음
+            .then(res => res.json())
+            .then(items => {
+              selector.innerHTML = "";
+              items.forEach(item => {
+                const img = document.createElement("img");
+                img.src = `/static/1bancon/${item.filename}`;
+                img.alt = item.name;
+                img.title = item.name;
+                img.style.width = "80px";
+                img.style.margin = "5px";
+                img.style.cursor = "pointer";
+                img.onclick = () => {
+                    document.getElementById("comment-box").value = `<img src='/static/1bancon/${item.filename}' style='height: 100px;'> `;
+                  selector.style.display = "none";
+                };
+                selector.appendChild(img);
+              });
+            });
+        }
+        </script>
+        
+
+  <div class="post-container">
+    <h2>{{ post.title }}</h2>
+    <p><strong>닉네임:</strong> {{ post.nickname }}</p>
+    <div class="post-content">{{ post.content | safe }}</div>
+  </div>
+
+  <div class="comment-box">
+    <h3>💬 댓글</h3>
+
+    <!-- 댓글 목록 -->
+    <!-- 댓글 목록 -->
+<!-- 댓글 목록 -->
+<!-- 댓글 목록 -->
+{% for comment in comments %}
+    <div class="comment" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <div>
+            <strong>{{ comment.nickname }}</strong>
+            <span style="font-size: 12px; color: gray;">({{ comment.email }})</span>
+        </div>
+        <span style="font-size: 12px; color: gray; white-space: nowrap;">{{ comment.created_at }}</span>
     </div>
+    <div style="background-color: #f1f1f1; border-radius: 5px; padding: 10px;">
+        {{ comment.content | safe }}
+    </div>
+{% endfor %}
+
+
+    <!-- 댓글 작성 -->
+    {% if email %}
+    <form method="POST">
+        <input type="text" name="nickname" placeholder="닉네임" required style="width:100%; margin-bottom:10px;">
+      
+        <!-- 🧩 일반콘 버튼 -->
+        <button type="button" onclick="openDcconSelector()">🧸 일반콘</button>
+      
+        <textarea name="comment" id="comment-box" rows="3" style="width:100%;" placeholder="댓글을 입력하세요" required></textarea><br>
+      
+        <button type="submit">댓글 작성</button>
+      </form>
+      
+      <!-- 일반콘 목록 표시용 -->
+      <div id="dccon-selector" style="display:none; margin-top:10px;"></div>
+           
+    {% else %}
+      <p>로그인해야 댓글을 작성할 수 있습니다.</p>
+    {% endif %}
+  </div>
 
 </body>
 </html>
